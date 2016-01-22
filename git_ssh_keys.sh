@@ -20,8 +20,7 @@ else
 fi
 
 # Prompt user for their Github email address (required for setting up SSH keys) - NOT WORKING!
-echo -n "Please enter your Github email address [ENTER]: "
-read git_email
+read -p "Please enter your Github email address [ENTER]: " git_email
 
 if [ "$git_email" != "" ]; then
     # Set up SSH keys (-N means no passphrase and -f denotes the file to store the key in)
