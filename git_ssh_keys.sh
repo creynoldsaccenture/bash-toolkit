@@ -39,4 +39,7 @@ else
     exit 1
 fi
 
+# Quash git push message (use simple version of git push)
+git config --global push.default simple
+
 exit 0
