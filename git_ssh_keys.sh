@@ -1,6 +1,8 @@
 #!/bin/bash
 
 function setup_git_aliases {
+    echo -e "Setting up Git aliases...\n"
+
     # Set up Git aliases
     git config --global alias.co checkout
     git config --global alias.br branch
@@ -16,6 +18,8 @@ if hash git 2>/dev/null; then
     git --version
     setup_git_aliases
 else
+    echo -e "Git not found, installing...\n"
+
     # Install Git
     sudo apt-get install git
     setup_git_aliases
