@@ -6,24 +6,47 @@ red="\e[91m"
 green="\e[92m"
 green_bg="\e[42m"
 
-function setup_ssh_keys {
-    # Prompt user for their Github email address (required for setting up SSH keys) - NOT WORKING!
+email_regex=[\w+@\w+]
+ssh_key_file=~/.ssh/id_rsa_git
+
+function new_line {
+    printf "\n"
+}
+
+function prompt_user {
+    # Prompt user for their Github email address (required for setting up SSH keys)
     read -p "Please enter your Github email address [ENTER]: " git_email
 
-    if [ "$git_email" != "" ]; then
+    setup_ssh_keys
+}
+
+function setup_ssh_keys {
+
+    if [[ "$git_email" != "" && "$git_email" =~ $email_regex ]]; then
+
+        new_line
+
         # Set up SSH keys (-N means no passphrase and -f denotes the file to store the key in)
-        ssh-keygen -t rsa -b 4096 -C "$git_email" -N "" -f ~/.ssh/id_rsa_git -q
+        ssh-keygen -t rsa -b 4096 -C "$git_email" -N "" -f $ssh_key_file -q
+
+        # If the user chooses to not overwrite an existing SSH key file then tell them the script will use the pre-existing SSH key
+        if [ $? -ne 0 ]; then
+            printf "\nUsing existing SSH key \"${ssh_key_file}\".\n\n"
+        fi
+
         ssh-agent -s
-        ssh-add ~/.ssh/id_rsa_git
+        new_line
+        ssh-add $ssh_key_file
 
-        printf "\nCopy the SSH key below (inside the double quote marks) and paste it into the SSH keys section of your Github profile:\n"
+        printf "\nCopy the SSH key below (inside the double quote marks) and add it to the SSH keys section of your Github profile:\n"
 
-        ssh_key=$(cat ~/.ssh/id_rsa_git.pub)
+        ssh_key=$(cat ${ssh_key_file}.pub)
 
         printf "\n${green_bg}\"${ssh_key}\"${reset}\n\n"
-    else
-        printf "\n${red}This script requires your Github email address to generate SSH keys!${reset}\n\n"
-        exit 1
+
+    elif ! [[ "$git_email" =~ $email_regex ]]; then
+        printf "\n${red}\"${git_email}\" is not a valid email address!${reset}\n\n"
+        prompt_user
     fi
 }
 
@@ -39,7 +62,7 @@ function setup_git_aliases {
 
     printf "${green}Done${reset}\n\n"
 
-    setup_ssh_keys
+    prompt_user
 }
 
 # Check if Git is already installed
