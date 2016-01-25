@@ -8,7 +8,6 @@ green_bg="\e[42m"
 
 # Matches {anything}@{anything}.{anything}
 email_regex=.+@.+\..+
-
 ssh_key_file=~/.ssh/id_rsa_git
 
 function new_line {
