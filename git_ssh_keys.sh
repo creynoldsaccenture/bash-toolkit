@@ -16,7 +16,17 @@ function new_line {
 
 function prompt_user {
     # Prompt user for their Github email address (required for setting up SSH keys)
+    read -p "Please enter your full name [ENTER]: " name
     read -p "Please enter your Github email address [ENTER]: " git_email
+
+    setup_git_author
+}
+
+function setup_git_author {
+    git config user.name "$name"
+    git config user.email "$git_email"
+
+    printf "Git author set as \"$name <$git_email>\""
 
     setup_ssh_keys
 }
@@ -32,10 +42,10 @@ function setup_ssh_keys {
 
         # If the user chooses to not overwrite an existing SSH key file then tell them the script will use the pre-existing SSH key
         if [ $? -ne 0 ]; then
-            printf "\nUsing existing SSH key \"${ssh_key_file}\".\n\n"
+            printf "\nUsing existing SSH key in \"${ssh_key_file}\".\n\n"
         fi
 
-        ssh-agent -s
+        eval $(ssh-agent -s)
         new_line
         ssh-add $ssh_key_file
 
